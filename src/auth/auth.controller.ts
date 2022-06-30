@@ -2,11 +2,15 @@ import { AuthService, LoginStatus, RegistrationStatus } from './auth.service';
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from 'src/user/dtos/user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -29,5 +33,11 @@ export class AuthController {
   @Post('login')
   public async login(@Body() loginUserDto: LoginUserDto): Promise<LoginStatus> {
     return await this.authService.login(loginUserDto);
+  }
+
+  @UseGuards(AuthGuard())
+  @Get('is-logged')
+  public async isLogged(@Request() req) {
+    return req.user;
   }
 }

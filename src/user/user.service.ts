@@ -20,13 +20,19 @@ export class UserService {
     const user = await this.userRepo.findOne({ where: { username } });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Usuario o constraña incorrectos.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const areEqual = await bcrypt.compare(password, user.password);
 
     if (!areEqual) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Usuario o constraña incorrectos.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     return user;
@@ -39,17 +45,17 @@ export class UserService {
   }
 
   async create(userDto: CreateUserDto): Promise<User> {
-    const { username, password, email } = userDto;
+    const { username, password } = userDto;
 
     // check if the user exists in the db
     const userInDb = await this.userRepo.findOne({
       where: { username },
     });
     if (userInDb) {
-      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException('El usuario ya existe', HttpStatus.BAD_REQUEST);
     }
 
-    const user: User = this.userRepo.create({ username, password, email });
+    const user: User = this.userRepo.create({ username, password });
 
     return this.userRepo.save(user);
   }

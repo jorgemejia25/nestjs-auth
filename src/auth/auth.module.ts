@@ -1,6 +1,7 @@
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from 'src/user/user.module';
@@ -13,11 +14,11 @@ import { UserModule } from 'src/user/user.module';
       session: false,
     }),
     JwtModule.register({
-      secret: 'HoafZ7uLRoNMANWtCzOkx4hswrBOucIl',
+      secret: '2WdJNTjuWjQ00CJSximSsxwVgn2rnHOs',
     }),
     UserModule,
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
   exports: [PassportModule, JwtModule],
 })
