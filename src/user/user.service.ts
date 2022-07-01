@@ -12,8 +12,10 @@ export class UserService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async findOne(options?: object): Promise<User> {
-    return await this.userRepo.findOne(options);
+  async findOne(id: string): Promise<User> {
+    return await this.userRepo.findOne({
+      where: { id },
+    });
   }
 
   async findByLogin({ username, password }: LoginUserDto): Promise<User> {
@@ -39,13 +41,15 @@ export class UserService {
   }
 
   async findByPayload({ username }: any): Promise<User> {
-    return await this.findOne({
+    return await this.userRepo.findOne({
       where: { username },
     });
   }
 
   async create(userDto: CreateUserDto): Promise<User> {
-    const { username, password } = userDto;
+    const { username, password, role } = userDto;
+
+    console.log(role);
 
     // check if the user exists in the db
     const userInDb = await this.userRepo.findOne({
@@ -55,8 +59,14 @@ export class UserService {
       throw new HttpException('El usuario ya existe', HttpStatus.BAD_REQUEST);
     }
 
-    const user: User = this.userRepo.create({ username, password });
+    const user: User = this.userRepo.create({ username, password, role });
 
     return this.userRepo.save(user);
+  }
+
+  async rolesMatch(role: string, id: string): Promise<boolean> {
+    const user = await this.findOne(id);
+
+    return user.role === role;
   }
 }
